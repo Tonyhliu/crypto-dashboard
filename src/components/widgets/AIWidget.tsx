@@ -48,7 +48,7 @@ function AIWidget({ chartData, cryptoName }: AIWidgetProps) {
     }
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md col-span-3 h-80"> 
+        <div className="bg-white p-4 rounded-lg shadow-md col-span-3 h-100"> 
             <h3 className="text-lg font-semibold mb-4">AI Crypto Assistant: ${cryptoName}</h3>
             {messages.map((message, idx) => (
                 <div key={idx} className={`p-2 rounded-lg ${
