@@ -8,8 +8,11 @@ This is a cryptocurrency tracking application that allows users to:
 This project was built with mobile-first designs in mind but also demonstrates integration of external APIs (Gemini & CoinGecko), real-time data visualization (Recharts), and AI-powered analysis in a React TypeScript application. It uses modern React patterns and Tailwind CSS for styling.
 
 ## Screenshots
-![Desktop View](./screenshots/Desktop.png)
-![Mobile View](./screenshots/Mobile.png)
+Desktop:
+![Desktop View](./public/Desktop.png)
+
+Mobile:
+![Mobile View](./public/Mobile.png)
 
 ## Future TODOs
 - Comparison between 2 cryptocurrencies and graphs it via Recharts
