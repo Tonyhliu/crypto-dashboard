@@ -4,8 +4,10 @@ import MetricCard from "../widgets/MetricCard";
 import StatusWidget from "../widgets/StatusWidget";
 import DashboardGrid from "./DashboardGrid";
 import { cryptoApi } from "../../services/cryptoApi";
-import type { MarketChart, CryptoPrice } from "../../services/cryptoApi";
+import { initGA, cryptoEvents } from "../../services/analyticsService";
+import type { MarketChart, CryptoPrice, ComparisonData } from "../../services/cryptoApi";
 import AIWidget from "../widgets/AIWidget";
+import ComparisonChart from "../widgets/ComparisonChart";
 
 function Dashboard() {
     const [chartData, setChartData] = useState<MarketChart | null>(null);
@@ -15,16 +17,22 @@ function Dashboard() {
     const [error, setError] = useState<string | null>(null);
     const [status, setStatus] = useState<string>('Online');
     const [lastUpdated, setLastUpdated] = useState<string>(new Date().toLocaleString());
+    const [comparisonData, setComparisonData] = useState<ComparisonData | null>(null);
+
+    // Initialize GA4
+    useEffect(() => {
+        initGA();
+    }, []);
 
     const handleCryptoClick = async (crypto: CryptoPrice) => {
-        if (currentChartName === crypto.name) {
-            return;
-        }
-
-        console.log('changing chart');
+        if (currentChartName === crypto.name) return;
+        
         setCurrentChartName(crypto.name);
         const cryptoChart = await cryptoApi.getMarketChart(crypto.id, 7);
         setChartData(cryptoChart);
+
+        // Track crypto view
+        cryptoEvents.viewCrypto(crypto.name);
     }
 
     useEffect(() => {
@@ -37,6 +45,13 @@ function Dashboard() {
 
                 const bitcoinChart = await cryptoApi.getMarketChart('bitcoin', 7);
                 setChartData(bitcoinChart);
+
+                // Fetch comparison data for BTC and ETH
+                const comparison = await cryptoApi.getComparison(['bitcoin', 'ethereum'], 90);
+                setComparisonData(comparison);
+
+                // Track comparison view
+                cryptoEvents.compareCharts(['Bitcoin', 'Ethereum']);
 
                 setLastUpdated(new Date().toLocaleString());
                 setStatus('Online');
@@ -54,8 +69,6 @@ function Dashboard() {
         const interval = setInterval(fetchData, 5 * 60 * 1000); // refresh every 5 minutes
         return () => clearInterval(interval); // cleanup interval on unmount
     }, []);
-
-
 
     if (loading && !topCryptos.length) {
         return <div>Loading...</div>;
